@@ -1,0 +1,105 @@
+{
+  "seed": 42,
+  "split_strategy": "age_stratified_then_coassign_near_duplicate_candidates",
+  "target_ratios": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "rare_age_rule": "Ages with fewer than 3 examples are assigned to training.",
+  "images_scanned": 23708,
+  "read_status": {
+    "ok": 23708
+  },
+  "label_status": {
+    "ok": 23700,
+    "invalid_filename": 8
+  },
+  "sample_status": {
+    "ok": 23062,
+    "conflicting_exact_duplicate_age": 419,
+    "conflicting_reviewed_duplicate_age": 38,
+    "invalid_filename": 8,
+    "exact_file_duplicate": 176,
+    "reviewed_near_duplicate": 5
+  },
+  "split_counts": {
+    "train": 16130,
+    "validation": 3467,
+    "test": 3465
+  },
+  "age_groups": {
+    "total": {
+      "0-12": 3348,
+      "13-17": 784,
+      "18-39": 11905,
+      "40-59": 4422,
+      "60+": 2603
+    },
+    "train": {
+      "0-12": 2342,
+      "13-17": 548,
+      "18-39": 8329,
+      "40-59": 3095,
+      "60+": 1816
+    },
+    "validation": {
+      "0-12": 506,
+      "13-17": 119,
+      "18-39": 1786,
+      "40-59": 662,
+      "60+": 394
+    },
+    "test": {
+      "0-12": 500,
+      "13-17": 117,
+      "18-39": 1790,
+      "40-59": 665,
+      "60+": 393
+    }
+  },
+  "observed_age_range": [
+    1,
+    116
+  ],
+  "ages_with_fewer_than_three_images": [
+    {
+      "age": 91,
+      "count": 2
+    },
+    {
+      "age": 101,
+      "count": 2
+    },
+    {
+      "age": 111,
+      "count": 1
+    }
+  ],
+  "near_duplicates": {
+    "max_dhash_distance": 4,
+    "max_gray_mae": 12.0,
+    "candidates": 625,
+    "review": {
+      "same_photo": 24
+    },
+    "groups_kept_together": 532,
+    "samples_reassigned": 276,
+    "cross_split_pairs": 0
+  },
+  "intersection_counts": {
+    "path": 0,
+    "file_sha256": 0,
+    "pixel_sha256": 0
+  },
+  "output_sha256": {
+    "age_distribution.csv": "6799b8d202d3a9e0993d26afc157c3f9825fa927b113e718fa3a2c8d6e4a0ec3",
+    "age_distribution.png": "d8d2fd79bf9e79c5d7bf818cedac6b222b4d97fed442f5a3df7e290ab8ac7c5d",
+    "exclusions.csv": "9162c91da4feefe6bc51d9bc2b5b95d36b7b3320ebd7ea994f36e17232275ddb",
+    "manifest.csv": "0098444ded4aac8cdf869bcc2860dee396df77b66b3cf067f3701f0ffa1bdc90",
+    "near_duplicate_candidates.csv": "20dc63bc244021fd5d2e6ee665be6ff5b428de71d2da5222d91454b1af1446ed",
+    "test.csv": "f4cc50a70f1971f52cbdb4ab7779dc46552b7451179cd84adf227ad9be67cd4b",
+    "train.csv": "9be53387b57cd1912a4edbf964f3468660f5bd37d7ec54cd62d1abf3b08915d0",
+    "validation.csv": "087ff499df932174eb0651deb8335f1de39db284c9a3643fd4b2b76480e7b7eb"
+  }
+}

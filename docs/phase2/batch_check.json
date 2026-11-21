@@ -1,0 +1,52 @@
+{
+  "workers": 2,
+  "dataset_lock_id": "40a1c18abe98493c732db34042a14e5b583cd0ca62ba461075f9cf47efc89c9b",
+  "locked_files_verified": true,
+  "rerun_identical": true,
+  "batches": {
+    "train": {
+      "samples": 16130,
+      "image_shape": [
+        16,
+        3,
+        224,
+        224
+      ],
+      "label_shape": [
+        16
+      ],
+      "image_dtype": "torch.float32",
+      "label_dtype": "torch.float32"
+    },
+    "validation": {
+      "samples": 3467,
+      "image_shape": [
+        16,
+        3,
+        224,
+        224
+      ],
+      "label_shape": [
+        16
+      ],
+      "image_dtype": "torch.float32",
+      "label_dtype": "torch.float32"
+    },
+    "test": {
+      "samples": 3465,
+      "image_shape": [
+        16,
+        3,
+        224,
+        224
+      ],
+      "label_shape": [
+        16
+      ],
+      "image_dtype": "torch.float32",
+      "label_dtype": "torch.float32"
+    }
+  },
+  "validation_and_test_match_standalone_preprocess": true,
+  "train_augmentation_varies": true
+}

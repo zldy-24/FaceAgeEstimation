@@ -57,6 +57,36 @@ CUDA 两组各预热 5 批、统计 20 批。计时包括 JPEG 读取、预处�
 
 每组先安排 **1 次短训校验**。调参另计，每组最多 **1 次**、全项目最多 **3 次**，每次最多 **2 轮**，优先试一个学习率配置。根据验证集 MAE 定下正式配置，三组权重锁定后统一评估测试集。
 
+## 第 2 阶段数据清单
+
+全量检查了 23,708 张 JPEG，全部可解码。按文件名规范剔除 8 张，按完全重复和人工确认的近重复剔除 638 张，其中 457 张属于同图年龄标注冲突。保留 **23,062 张**，划分如下。
+
+| 年龄组 | 合计 | 训练 | 验证 | 测试 |
+|---|---:|---:|---:|---:|
+| 0–12 岁 | 3,348 | 2,342 | 506 | 500 |
+| 13–17 岁 | 784 | 548 | 119 | 117 |
+| 18–39 岁 | 11,905 | 8,329 | 1,786 | 1,790 |
+| 40–59 岁 | 4,422 | 3,095 | 662 | 665 |
+| 60 岁及以上 | 2,603 | 1,816 | 394 | 393 |
+| **合计** | **23,062** | **16,130** | **3,467** | **3,465** |
+
+年龄以文件名中的标签为准，五个年龄组以上表为后续误差统计口径。清洗后年龄范围为 1–116 岁。91、101 和 111 岁各不足 3 张，归入训练集。13–17 岁是最少的评估组，报告分组 MAE 时同时列出样本数。
+
+文件 SHA-256 和解码后 RGB 像素 SHA-256 用于查重。完全重复或人工确认的近重复在年龄一致时保留一个样本，标注冲突时剔除整组。人工抽查前 24 对高相似候选，其余候选通过连通分组留在同一个集合。划分固定随机种子 42，先按逐岁年龄分层，再合并候选分组。三个集合的相对路径、文件哈希和像素哈希交集均为空。UTKFace 公开标签缺少人物 ID，同一人物的不同照片仍可能跨集合。[UTKFace 官方说明](https://susanqq.github.io/UTKFace/)
+
+正式清单位于 `data/processed/utkface/`，包括 `train.csv`、`validation.csv`、`test.csv`、全量检查记录、剔除清单、近重复候选和年龄分布图。后续三组模型共用这份划分。批次检查以独立归档的 [数据锁定记录](docs/phase2/dataset-lock.json) 校验清单及生成摘要。人工判断见 [复核清单](docs/phase2/near_duplicate_review.csv)。
+
+在项目根目录的 PowerShell 中复现。准备脚本要求输出目录尚未创建，已有正式清单时选择一个新的输出目录。
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r .\docs\phase2\requirements.txt
+$env:MPLCONFIGDIR = Join-Path (Get-Location) 'artifacts/matplotlib'
+.\.venv\Scripts\python.exe -m scripts.prepare_data --seed 42 --near-review .\docs\phase2\near_duplicate_review.csv --output .\artifacts\phase2-reproduced
+.\.venv\Scripts\python.exe -m scripts.check_data_batches --splits .\data\processed\utkface --against .\artifacts\phase2-reproduced --workers 2
+```
+
+训练使用 `AgeDataset(..., training=True)`，输入为定向后的 RGB、224×224 和 ImageNet 归一化，并加入随机水平翻转和轻量亮度增强。验证、测试及后续演示使用 [同一个确定性预处理](age_estimation/data.py) `build_preprocess()`。按锁定后的 16,130 张训练图、批量 16 和第一阶段吞吐估算，全网微调约 98 秒/轮，最多 8 轮约 13 分钟，仍以短训实测校正。
+
 ## 最终验收清单
 
 - [ ] 基础 CNN、冻结主干的 ResNet18、全网微调的 ResNet18 均在同一份数据划分上评估，按验证 MAE 选权重。
