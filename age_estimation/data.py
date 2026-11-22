@@ -12,6 +12,21 @@ from torchvision import transforms
 INPUT_SIZE = (224, 224)
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
+FLIP_PROBABILITY = 0.5
+BRIGHTNESS_JITTER = 0.15
+
+
+def preprocessing_config():
+    return {
+        "color": "RGB",
+        "exif_orientation": True,
+        "size": INPUT_SIZE,
+        "resize_interpolation": "bilinear",
+        "mean": MEAN,
+        "std": STD,
+        "train_horizontal_flip_probability": FLIP_PROBABILITY,
+        "train_brightness_jitter": BRIGHTNESS_JITTER,
+    }
 
 
 def oriented_rgb(image):
@@ -22,8 +37,8 @@ def build_preprocess(*, training=False):
     steps = [oriented_rgb, transforms.Resize(INPUT_SIZE)]
     if training:
         steps.extend([
-            transforms.RandomHorizontalFlip(),
-            transforms.ColorJitter(brightness=0.15),
+            transforms.RandomHorizontalFlip(p=FLIP_PROBABILITY),
+            transforms.ColorJitter(brightness=BRIGHTNESS_JITTER),
         ])
     steps.extend([transforms.ToTensor(), transforms.Normalize(MEAN, STD)])
     return transforms.Compose(steps)

@@ -87,6 +87,35 @@ $env:MPLCONFIGDIR = Join-Path (Get-Location) 'artifacts/matplotlib'
 
 训练使用 `AgeDataset(..., training=True)`，输入为定向后的 RGB、224×224 和 ImageNet 归一化，并加入随机水平翻转和轻量亮度增强。验证、测试及后续演示使用 [同一个确定性预处理](age_estimation/data.py) `build_preprocess()`。按锁定后的 16,130 张训练图、批量 16 和第一阶段吞吐估算，全网微调约 98 秒/轮，最多 8 轮约 13 分钟，仍以短训实测校正。
 
+## 第 3 阶段训练与短训验收
+
+[训练入口](scripts/train.py) 默认从第 2 阶段独立归档的锁定记录核验清单和摘要。训练采用 MSE，按验证集逐样本汇总 MAE 和 RMSE，并按验证 MAE 保存最佳权重。权重包含预处理配置、模型类型、运行参数和数据锁指纹，重载后复验验证预测。每个运行目录包含 `history.csv`、`best.pt`、`validation_predictions.csv` 和 `run.json`。
+
+基础 CNN 随机初始化。ResNet18 先使用 ImageNet 权重预热回归头，冻结组和微调组读取同一个预热检查点。冻结组只更新回归头，主干的 BatchNorm 缓冲区保持固定。微调组解冻全网，主干和回归头的初始学习率分别为 `1e-4` 和 `1e-3`。
+
+用 PowerShell 在项目根目录复现短训，选择尚未使用的输出目录。
+
+```powershell
+$shortRunRoot = '.\artifacts\phase3-reproduced'
+$shortRunArgs = @('--epochs','2','--train-limit','512','--validation-limit','128','--batch-size','16','--seed','42')
+.\.venv\Scripts\python.exe -m scripts.train --strategy cnn @shortRunArgs --output "$shortRunRoot/cnn"
+.\.venv\Scripts\python.exe -m scripts.train --strategy warmup @shortRunArgs --output "$shortRunRoot/warmup"
+.\.venv\Scripts\python.exe -m scripts.train --strategy frozen @shortRunArgs --init-checkpoint "$shortRunRoot/warmup/best.pt" --output "$shortRunRoot/frozen"
+.\.venv\Scripts\python.exe -m scripts.train --strategy finetune @shortRunArgs --init-checkpoint "$shortRunRoot/warmup/best.pt" --output "$shortRunRoot/finetune"
+.\.venv\Scripts\python.exe -m scripts.train --strategy cnn --epochs 60 --lr 0.003 --train-limit 16 --validation-limit 16 --output "$shortRunRoot/small-sample"
+```
+
+| 短训方案 | 最佳验证 MAE（岁） | 对应 RMSE（岁） | 按完整清单估算每轮（含验证与保存） |
+|---|---:|---:|---:|
+| 基础 CNN | 23.30 | 29.22 | 59 秒 |
+| ResNet18 共享预热 | 20.48 | 25.83 | 61 秒 |
+| ResNet18 冻结主干 | 16.63 | 21.36 | 62 秒 |
+| ResNet18 全网微调 | 8.76 | 11.71 | 72 秒 |
+
+抽取 16 张图反复训练基础 CNN，训练 MSE 从 811.89 降至 72.24。复核确认冻结组的 120 个主干张量与预热时逐值相同（含 BatchNorm 缓冲区），微调组的主干权重和 BatchNorm 统计均发生更新。短训指标来自相同的 128 张验证样本，第四阶段才使用正式测试集。复算及分段耗时见 [短训验收记录](docs/phase3/short-run-check.json)。
+
+正式运行时省略子集参数，按基础 CNN 10 轮、共享预热 2 轮、冻结组和微调组各 8 轮安排。按短训分段耗时线性外推约 **30 分钟**，正式实验仍保留原定约 2 小时窗口，以覆盖大批量读盘和长时间运行波动。
+
 ## 最终验收清单
 
 - [ ] 基础 CNN、冻结主干的 ResNet18、全网微调的 ResNet18 均在同一份数据划分上评估，按验证 MAE 选权重。
