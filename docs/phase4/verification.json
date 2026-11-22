@@ -1,0 +1,36 @@
+{
+  "selection_sha256": "76a9aa399ccf2fdc1dc40c440830d70c4bad14bdc81d9f8488233960d7e2151c",
+  "verified": {
+    "cnn": {
+      "predictions": 3465,
+      "age_groups": 5,
+      "latency_samples": 200,
+      "mae": 9.995645834632422,
+      "rmse": 13.155802931750284
+    },
+    "frozen": {
+      "predictions": 3465,
+      "age_groups": 5,
+      "latency_samples": 200,
+      "mae": 9.746026190156373,
+      "rmse": 12.750048250565584
+    },
+    "finetune": {
+      "predictions": 3465,
+      "age_groups": 5,
+      "latency_samples": 200,
+      "mae": 5.235692322082162,
+      "rmse": 7.336620121848896
+    }
+  },
+  "output_sha256": {
+    "age_group_metrics.csv": "f9f0be79406e6a7d01a556283e98ea09f7604a7c393fed5ab8a10df52b120631",
+    "evaluation.json": "fe3647ece5a126510712f1076467af2e4ad4651a75d78b11a0ef8cab59c1bfb4",
+    "latency_samples.csv": "47cbc9c9aaf2806e1f7ee42e04684fb803fdabd87df1177ecacbabe5cd7c3233",
+    "metrics.csv": "ab5f1960823051ce0e7584924fcedbb9728728069e1831dc46c1004c037b9ee2",
+    "outlier_candidates.csv": "7f3bb6b92fdd105f2d77624e8aef7cb6cc0b35c412844eebe58f74fbf6c31f47",
+    "predictions_cnn.csv": "1c7bb7cf6ade61dede3a5ebe79397784778749098814dcb12d1d2f0057eb1ed3",
+    "predictions_finetune.csv": "d120a6c26e83336b0938f295f3f2298d4f63281e8411b641455ed70ebd1cba1d",
+    "predictions_frozen.csv": "af0c9740e67112464e843758009fde5187c1792a012a246d6fa6ea9d043dafa1"
+  }
+}

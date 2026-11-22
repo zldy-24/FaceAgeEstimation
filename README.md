@@ -116,11 +116,32 @@ $shortRunArgs = @('--epochs','2','--train-limit','512','--validation-limit','128
 
 正式运行时省略子集参数，按基础 CNN 10 轮、共享预热 2 轮、冻结组和微调组各 8 轮安排。按短训分段耗时线性外推约 **30 分钟**，正式实验仍保留原定约 2 小时窗口，以覆盖大批量读盘和长时间运行波动。
 
+## 第 4 阶段正式对照
+
+[正式实验协议](docs/phase4/protocol.json) 在训练开始前确定。三组共用完整锁定数据和随机种子 42，批量为 16，优化器为 AdamW，采用上节约定的轮次和学习率。本轮各策略使用预定配置，调参试跑为 0 次。每组按最低验证 MAE 选最佳权重，并按同样的验证指标选出演示模型。验证选择单独归档后，才在完整测试集评估。
+
+在 PowerShell 中使用新的输出目录复现。正式测试对每组选择的权重导出逐图年龄预测、总体误差、分年龄段误差和单图耗时。
+
+```powershell
+$formalRun = '.\artifacts\phase4-reproduced'
+$formalSelection = '.\artifacts\phase4-reproduced-selection.json'
+.\scripts\train_formal.ps1 -Output $formalRun
+.\.venv\Scripts\python.exe -m scripts.evaluate_formal select --experiment $formalRun --selection-lock $formalSelection
+.\.venv\Scripts\python.exe -m scripts.evaluate_formal test --experiment $formalRun --selection-lock $formalSelection
+.\.venv\Scripts\python.exe -m scripts.check_formal --experiment $formalRun --selection-lock $formalSelection
+$env:MPLCONFIGDIR = Join-Path (Get-Location) 'artifacts/matplotlib'
+.\.venv\Scripts\python.exe -m scripts.plot_formal --experiment $formalRun
+```
+
+训练计时覆盖模型初始化、数据读取、训练、逐轮验证及最佳权重保存，最终重载和预测导出另计。两组 ResNet18 共享预热，单组比较将该成本计入两组，项目总耗时只计一次。推理计时使用同一张已预处理且已上传 GPU 的输入，预热 30 次并以 CUDA 事件记录 200 次前向，单独统计均值、中位数及 P95。
+
+本轮正式测试共 3,465 张图，基础 CNN、冻结 ResNet18、全网微调 ResNet18 的 MAE 分别为 10.00、9.75、5.24 岁，已从逐图预测复算。演示使用按验证 MAE 锁定的 [全网微调权重](artifacts/phase4/finetune/best.pt)。[正式实验结果与分析](docs/phase4/results.md) · [验证选择记录](docs/phase4/selection.json) · [复算记录](docs/phase4/verification.json)
+
 ## 最终验收清单
 
-- [ ] 基础 CNN、冻结主干的 ResNet18、全网微调的 ResNet18 均在同一份数据划分上评估，按验证 MAE 选权重。
-- [ ] 有测试 MAE、RMSE、训练耗时、单图推理耗时和分年龄段样本数及 MAE。逐图预测可以复算汇总表。
-- [ ] 有训练曲线、总体误差对比图、真实与预测年龄散点图、分年龄段误差图。
+- [x] 基础 CNN、冻结主干的 ResNet18、全网微调的 ResNet18 均在同一份数据划分上评估，按验证 MAE 选权重。
+- [x] 有测试 MAE、RMSE、训练耗时、单图推理耗时和分年龄段样本数及 MAE。逐图预测可以复算汇总表。
+- [x] 有训练曲线、总体误差对比图、真实与预测年龄散点图、分年龄段误差图。
 - [ ] Windows 上以 PowerShell 启动 Gradio，验证图片上传、人脸检测与裁剪、估计年龄展示。
 - [ ] 验证单脸、多人脸、无人脸、损坏图片及权重缺失处理，并在干净的 Windows 环境复验 CPU 推理。
 - [ ] 提交报告、源码、权重、训练配置和日志、数据划分、预测明细、图表、运行说明和答辩材料。

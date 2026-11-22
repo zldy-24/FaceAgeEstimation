@@ -1,0 +1,52 @@
+{
+  "dataset_lock_id": "40a1c18abe98493c732db34042a14e5b583cd0ca62ba461075f9cf47efc89c9b",
+  "protocol_id": "2911e181d15b7e1563c09642a52001b17ef02c7b3c05545f361b4de7b49a2ee0",
+  "demo_strategy": "finetune",
+  "runs": {
+    "cnn": {
+      "checkpoint": "cnn/best.pt",
+      "sha256": "87dd2e90bff61da21bfcae38de763e4c7a7ab090bc56732c3868da9d52e8fe26",
+      "best_epoch": 9,
+      "validation": {
+        "mae": 10.05006384313158,
+        "rmse": 12.965725882138443
+      },
+      "training_seconds": 695.8827134999992,
+      "reload_and_export_seconds": 8.229669599999397
+    },
+    "warmup": {
+      "checkpoint": "warmup/best.pt",
+      "sha256": "0cccabd8390108b143e9ae33be3e5c5164c0c05e733a995e4a9227f8d81b98dc",
+      "best_epoch": 2,
+      "validation": {
+        "mae": 10.86557069183565,
+        "rmse": 14.190216273119896
+      },
+      "training_seconds": 121.3074099000005,
+      "reload_and_export_seconds": 8.48491230000036
+    },
+    "frozen": {
+      "checkpoint": "frozen/best.pt",
+      "sha256": "83c73603ff0d33d5a41f8b8c41962fb0512bfa73e447141bd5d7d9dba00832df",
+      "best_epoch": 7,
+      "validation": {
+        "mae": 9.66580198587861,
+        "rmse": 12.463823240965679
+      },
+      "training_seconds": 625.1305853999984,
+      "reload_and_export_seconds": 11.420627599998625
+    },
+    "finetune": {
+      "checkpoint": "finetune/best.pt",
+      "sha256": "24afb9ed0b046b29b6184820fae70a8083ce140795801612fe25078a9a059e59",
+      "best_epoch": 6,
+      "validation": {
+        "mae": 5.251917680514316,
+        "rmse": 7.296718993015943
+      },
+      "training_seconds": 673.9461288000002,
+      "reload_and_export_seconds": 8.78776839999955
+    }
+  },
+  "selected_utc": "2026-11-22T04:47:59.090854+00:00"
+}

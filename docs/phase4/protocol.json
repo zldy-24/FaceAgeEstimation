@@ -1,0 +1,33 @@
+{
+  "dataset_lock_id": "40a1c18abe98493c732db34042a14e5b583cd0ca62ba461075f9cf47efc89c9b",
+  "sample_counts": {"train": 16130, "validation": 3467, "test": 3465},
+  "training": {
+    "seed": 42,
+    "device": "cuda",
+    "batch_size": 16,
+    "workers": 0,
+    "optimizer": "adamw",
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "epochs": {"cnn": 10, "warmup": 2, "frozen": 8, "finetune": 8},
+    "finetune_backbone_lr": 0.0001,
+    "tuning_trials": 0
+  },
+  "model_selection": {
+    "checkpoint": "minimum validation MAE; first epoch on ties",
+    "demo": "minimum best validation MAE; CNN, frozen, finetune order on ties",
+    "warmup": "both ResNet18 branches start from the same validation-selected checkpoint"
+  },
+  "inference": {
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "cuda": "12.6",
+    "torch": "2.14.1+cu126",
+    "torchvision": "0.29.1+cu126",
+    "driver": "617.42",
+    "batch_size": 1,
+    "warmup_forwards": 30,
+    "measured_forwards": 200,
+    "scope": "synchronized model forward on a preprocessed tensor already on the GPU"
+  }
+}
